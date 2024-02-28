@@ -8,6 +8,8 @@ import SplashScreen from '../screens/onBoarding.js/SplashScreen';
 import DashBoardForCompany from '../screens/jobPosting/DashBoardForCompany';
 import AddJob from '../screens/jobPosting/Tabs/AddJob';
 import EditJob from '../screens/jobPosting/Tabs/EditJob';
+import UpdateProfileForCompany from '../screens/jobPosting/UpdateProfileForCompany';
+import ChangeProfilePicForCompany from '../screens/jobPosting/ChangeProfilePicForCompany';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,10 @@ const MainNavigator = () => {
         <Stack.Screen name='DashBoardForComapny' component={DashBoardForCompany}/>
         <Stack.Screen name='AddJob' component={AddJob} />
         <Stack.Screen name='EditJob' component={EditJob} />
+        <Stack.Screen name='UpdateProfileForCompany' component={UpdateProfileForCompany} />
+        <Stack.Screen name='ChangeProfilePicForCompany' component={ChangeProfilePicForCompany} />
+
+
 
       </Stack.Navigator>
     </NavigationContainer>

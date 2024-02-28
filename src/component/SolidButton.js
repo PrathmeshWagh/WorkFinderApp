@@ -3,7 +3,7 @@ import React from 'react'
 import { moderateScale, moderateVerticalScale, verticalScale } from 'react-native-size-matters'
 import { BG_COLOR, TEXT_COLOR } from '../util/Colors'
 
-const SolidButton = ({title, onPress}) => {
+const SolidButton = ({title, onPress,}) => {
   return (
     <TouchableOpacity style={styles.btnContainer} onPress={onPress}>
         <Text style={styles.btnTitle}>{title}</Text>

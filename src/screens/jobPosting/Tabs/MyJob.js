@@ -5,30 +5,41 @@ import { moderateScale, verticalScale } from 'react-native-size-matters'
 import { FlatList } from 'react-native-gesture-handler'
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
+
+
+const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
 const MyJob = () => {
   const navigation = useNavigation()
   const isFocused = useIsFocused();
   const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     getJobs()
   }, [isFocused])
 
   const getJobs = async () => {
+    setLoading(true)
     let id = await AsyncStorage.getItem("USERID");
     firestore().collection('jobs').where("postedBy", "==", id)
-      .get().then((data) => {
+      .get().then(async (data) => {
+        setLoading(false)
         let temp = []
         data.docs.forEach((item) => {
           temp.push({ ...item.data(), id: item.id })
         });
+        await AsyncStorage.setItem('JOBS', temp.length + "")
         setJobs(temp)
       })
   }
 
   const renderJobData = ({ item, index }) => {
+
+
     return (
       <View style={styles.jobItem}>
         <Text style={styles.title}>{item.jobTitle}</Text>
@@ -40,7 +51,7 @@ const MyJob = () => {
         <Text style={styles.salary}>{'Experience: ' + item.reqExperience + ' Year'}</Text>
 
         <View style={styles.bottomView}>
-          <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditJob',{data:item})}>
+          <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditJob', { data: item })}>
             <Text>Edit Job</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.deleteBtn} onPress={() => deleteJob(item.id)}>
@@ -60,14 +71,52 @@ const MyJob = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Find My Job</Text>
+
       <FlatList
         data={jobs}
         renderItem={renderJobData}
         ListEmptyComponent={() => {
           return (
-            <View style={styles.emptyView}>
-              <Text style={styles.title}>Empty Jobs</Text>
+            <>
+             <View style={styles.loaderView}>
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <View style={styles.loaderBottomView}>
+                <ShimmerPlaceholder style={styles.loaderBtn} />
+                <ShimmerPlaceholder style={styles.loaderBtn} />
+              </View>
             </View>
+
+            <View style={styles.loaderView}>
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <View style={styles.loaderBottomView}>
+                <ShimmerPlaceholder style={styles.loaderBtn} />
+                <ShimmerPlaceholder style={styles.loaderBtn} />
+              </View>
+            </View>
+
+            <View style={styles.loaderView}>
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <ShimmerPlaceholder style={styles.loaderTitle} />
+              <View style={styles.loaderBottomView}>
+                <ShimmerPlaceholder style={styles.loaderBtn} />
+                <ShimmerPlaceholder style={styles.loaderBtn} />
+              </View>
+            </View>
+            </>
+            
+
+            
           )
         }}
       />
@@ -137,6 +186,34 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   emptyView: {
-      alignSelf:'center'
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginTop:'80%'
+
+  },
+  loaderView: {
+    width: '90%',
+    // height: verticalScale(200),
+    alignSelf: 'center',
+    marginTop: moderateScale(20)
+  },
+  loaderTitle: {
+    width: "70%",
+    height: verticalScale(30),
+    borderRadius: moderateScale(10),
+    marginVertical: moderateScale(5),
+  },
+  loaderBottomView: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: moderateScale(10)
+  },
+  loaderBtn: {
+    width: '40%',
+    height: verticalScale(30),
+    borderRadius: moderateScale(10)
   }
+
 })

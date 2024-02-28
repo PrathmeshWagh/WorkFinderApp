@@ -12,7 +12,7 @@ import AddJob from './Tabs/AddJob';
 
 const DashBoardForCompany = ({ navigation }) => {
 
-    const [selectedTab, setselectedTab] = useState(0)
+    const [selectedTab, setselectedTab] = useState(0);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -22,7 +22,9 @@ const DashBoardForCompany = ({ navigation }) => {
                     <SearchCandidates /> :
                     selectedTab == 2 ?
                         <Chats /> :
-                        <Profile1 />
+                        <Profile1  onJobPress={() =>{
+                            setselectedTab(0)
+                        }}/>
             }
             <View style={styles.bottomView}>
                 <TouchableOpacity
