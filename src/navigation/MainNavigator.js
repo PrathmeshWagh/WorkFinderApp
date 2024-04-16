@@ -27,7 +27,7 @@ const MainNavigator = () => {
         <Stack.Screen name='EditJob' component={EditJob} />
         <Stack.Screen name='UpdateProfileForCompany' component={UpdateProfileForCompany} />
         <Stack.Screen name='ChangeProfilePicForCompany' component={ChangeProfilePicForCompany} />
-
+      
 
 
       </Stack.Navigator>

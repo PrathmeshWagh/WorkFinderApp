@@ -1,16 +1,14 @@
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import CustomHeader from '../../component/CustomHeader'
+import React, { useState } from 'react'
 import { BG_COLOR, TEXT_COLOR } from '../../util/Colors'
 import { moderateScale, moderateVerticalScale, scale } from 'react-native-size-matters'
 import CustomTextInput from '../../component/CustomTextInput'
 import SolidButton from '../../component/SolidButton'
 import CustomBorderButton from '../../component/CustomBorderButton'
-import Loader from '../../component/Loader';
+import Loader from '../../component/Loader'
 import firestore from '@react-native-firebase/firestore'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const UpdateProfileForCompany = ({ navigation }) => {
+const SignUpForUser = ({ navigation }) => {
 
   const [name, setName] = useState('');
   const [badName, setBadName] = useState('');
@@ -20,7 +18,7 @@ const UpdateProfileForCompany = ({ navigation }) => {
   const [email, setemail] = useState('');
   const [badEmail, setBadEmail] = useState('');
 
-  // const [accountCreated, setAccountCreated] = useState(false);
+  const [accountCreated, setAccountCreated] = useState(false);
 
   const [contact, setcontact] = useState('');
   const [badContact, setBadContact] = useState('');
@@ -31,8 +29,8 @@ const UpdateProfileForCompany = ({ navigation }) => {
   const [address, setaddress] = useState('')
   const [badAddress, setBadAddress] = useState('');
 
-  // const [password, setpassword] = useState('');
-  // const [badPassword, setBadPassword] = useState('');
+  const [password, setpassword] = useState('');
+  const [badPassword, setBadPassword] = useState('');
 
   const validate = () => {
     let valid = true;
@@ -58,26 +56,26 @@ const UpdateProfileForCompany = ({ navigation }) => {
       setBadContact('');
     }
 
-    if (companyName.trim() === '') {
-      setBadCompanyName('Company name cannot be empty');
-      valid = false;
-    } else {
-      setBadCompanyName('');
-    }
-
-    if (address.trim() === '') {
-      setBadAddress('Address cannot be empty');
-      valid = false;
-    } else {
-      setBadAddress('');
-    }
-
-    // if (password.trim() === '') {
-    //   setBadPassword('Password cannot be empty');
+    // if (companyName.trim() === '') {
+    //   setBadCompanyName('Company name cannot be empty');
     //   valid = false;
     // } else {
-    //   setBadPassword('');
+    //   setBadCompanyName('');
     // }
+
+    // if (address.trim() === '') {
+    //   setBadAddress('Address cannot be empty');
+    //   valid = false;
+    // } else {
+    //   setBadAddress('');
+    // }
+
+    if (password.trim() === '') {
+      setBadPassword('Password cannot be empty');
+      valid = false;
+    } else {
+      setBadPassword('');
+    }
 
     return valid;
   };
@@ -88,55 +86,37 @@ const UpdateProfileForCompany = ({ navigation }) => {
   };
 
 
-  const updateUser = async () => {
-    const id = await AsyncStorage.getItem('USERID');
-    console.log('id',id);
+  const registerUser = () => {
     setLoading(true)
-    firestore()
-      .collection('job_posters')
-      .doc(id)
-      .update({
-        name,
-        email,
-        contact,
-        address,
-        companyName
+    firestore().collection('users').add({
+      name,
+      email,
+      contact,
+      password,
 
-      }).then(async () => {
-        await AsyncStorage.setItem('NAME',name)
-        navigation.goBack()
-      }).catch(error => {
-        setLoading(false)
-        console.log('errorr', error)
-      })
+    }).then(() => {
+      setName('')
+      setemail('')
+      setpassword('')
+      setcontact('')
+      setAccountCreated(true)
+      setLoading(false);
+      setTimeout(() => {
+          navigation.navigate('LoginForUser')
+      }, 3000);
+    }).catch(error => {
+      setLoading(false)
+      console.log('error', error)
+    })
   }
 
-  useEffect(() => {
-    getData()
-  }, [])
-
-  const getData = async () => {
-    const uemail = await AsyncStorage.getItem('EMAIL');
-    firestore().collection('job_posters').where('email', '==', uemail)
-      .get().then((res) => {
-        res.docs.forEach((item) => {
-          setName(item.data().name)
-          setemail(item.data().email)
-          setcontact(item.data().contact)
-          setcompanyName(item.data().companyName)
-          setaddress(item.data().address)
-        })
-      })
-  }
 
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomHeader title={'Edit Profile'} onPress={() => {
-        navigation.goBack()
-      }} />
-      {/* {!accountCreated ? */}
-      <ScrollView>
+      {!accountCreated ?   <ScrollView>
+        <Image source={require('../../img/appIcon.png')} style={styles.logo} />
+        <Text style={styles.loginTitle}>Create Account</Text>
         <CustomTextInput
           placeholder={'Prathmesh wagh'}
           label={'Name'}
@@ -164,7 +144,7 @@ const UpdateProfileForCompany = ({ navigation }) => {
           maxLength={10}
         />
         {badContact != '' && <Text style={styles.errorMsgText}>{badContact}</Text>}
-        <CustomTextInput
+        {/* <CustomTextInput
           placeholder={'ex. Infosys'}
           label={'Company Name'}
           value={companyName}
@@ -179,42 +159,41 @@ const UpdateProfileForCompany = ({ navigation }) => {
           onChangeText={(text) => setaddress(text)}
           secureTextEntry={false}
         />
-        {badAddress != '' && <Text style={styles.errorMsgText}>{badAddress}</Text>}
-        {/* <CustomTextInput
-            placeholder={'********'}
-            label={'Password'}
-            value={password}
-            onChangeText={(text) => setpassword(text)}
-            secureTextEntry={true}
-          /> */}
-        {/* {badPassword != '' && <Text style={styles.errorMsgText}>{badPassword}</Text>} */}
+        {badAddress != '' && <Text style={styles.errorMsgText}>{badAddress}</Text>} */}
+        <CustomTextInput
+          placeholder={'********'}
+          label={'Password'}
+          value={password}
+          onChangeText={(text) => setpassword(text)}
+          secureTextEntry={true}
+        />
+        {badPassword != '' && <Text style={styles.errorMsgText}>{badPassword}</Text>}
         <SolidButton
-        backgroundColor={TEXT_COLOR}
-          title={'Update'}
+          title={'SignUp'}
           onPress={() => {
             if (validate()) {
-              updateUser()
+              registerUser()
             }
           }}
         />
 
-        {/* <CustomBorderButton
-            title={'Login'}
-            onPress={() => navigation.goBack()}
-          /> */}
+        <CustomBorderButton
+          title={'Login'}
+          onPress={() => navigation.navigate('LoginForUser')}
+        />
         <Loader visible={loading} />
-      </ScrollView>
-      {/* // <View style={styles.doneView}>
-        //   <Image source={require('../../img/yes.png')} style={styles.logo} />
-        //   <Text style={styles.loginTitle}>Account Created</Text>
-        // </View> */}
-
-
+      </ScrollView>:
+      <View style={styles.doneView}>
+        <Image source={require('../../img/yes.png')} style={styles.logo} />
+        <Text style={styles.loginTitle}>Account Created</Text>
+      </View>
+      }
+     
     </SafeAreaView>
   )
 }
 
-export default UpdateProfileForCompany
+export default SignUpForUser
 
 const styles = StyleSheet.create({
   container: {
@@ -248,11 +227,11 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft: moderateScale(20)
   },
-  doneView: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center'
+  doneView:{
+    width:'100%',
+    height:'100%',
+    justifyContent:'center',
+    alignItems:'center'
 
   }
 })

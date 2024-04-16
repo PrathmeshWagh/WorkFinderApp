@@ -1,6 +1,6 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import { BG_COLOR } from '../../../util/Colors'
+import { BG_COLOR, TEXT_COLOR } from '../../../util/Colors'
 import { moderateScale, verticalScale } from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomTextInput from '../../../component/CustomTextInput';
@@ -254,7 +254,7 @@ const AddJob = () => {
           onChangeText={(text) => setCompany(text)}
         />
         {badCompany != '' && <Text style={styles.errorMsg}>{badCompany}</Text>}
-        <SolidButton title={'Post Job'} onPress={() => {
+        <SolidButton backgroundColor={TEXT_COLOR} title={'Post Job'} onPress={() => {
           if(validate()){
             postJob()
           }

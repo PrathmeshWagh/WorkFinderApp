@@ -69,14 +69,14 @@ const BottomTab = () => {
     )
 }
 
-const Main = () => {
+const Main = ({navigation}) => {
     return (
-        <Drawer.Navigator drawerContent={(props) => <CustomDrawer props={props} />} initialRouteName='BottomTabs' >
-            <Drawer.Screen
+        <Drawer.Navigator drawerContent={(props) => <CustomDrawer  props={props} />} initialRouteName='BottomTabs' >
+            {/* <Drawer.Screen
                 name='DrawerScreen'
                 component={DrawerScreen}
                
-            />
+            /> */}
             <Drawer.Screen 
             name='BottomTabs' 
             component={BottomTab} 

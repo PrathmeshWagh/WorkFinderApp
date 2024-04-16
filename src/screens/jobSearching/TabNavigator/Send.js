@@ -1,14 +1,141 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import React, { useLayoutEffect, useState } from 'react';
+import NoLoginComponent from '../../../component/NoLoginComponent';
+import { BG_COLOR } from '../../../util/Colors';
+import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { moderateScale, verticalScale } from 'react-native-size-matters';
 
-const Send = () => {
+const Send = ({ navigation }) => {
+  const isFocused = useIsFocused()
+  const [isLogin, setIsLogin] = useState(false)
+  const [jobs, setJobs] = useState([])
+
+  useLayoutEffect(() => {
+    getData()
+    savedJob()
+  }, [isFocused])
+
+  const getData = async () => {
+    const id = await AsyncStorage.getItem("USERID")
+    const type = await AsyncStorage.getItem("USER_TYPE")
+
+    if (id != null && type != null) {
+      if (type == 'user') {
+        setIsLogin(true)
+      }
+    }
+  }
+
+  const savedJob = async (txt) => {
+    const id = await AsyncStorage.getItem("USERID");
+
+    firestore()
+      .collection('applied_jobs')
+      .where('userId', '==', id)
+      .get()
+      .then((snapshots) => {
+        let temp = []
+        snapshots.docs.forEach(item => {
+          temp.push({ ...item.data(), savedJobId: item.id })
+        });
+        setJobs(temp);
+
+      })
+      .catch(error => {
+        console.log('Error While Searching Job', error);
+      })
+  }
+
+  const renderJobTitle = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.jobTitleBox} onPress={() => navigation.navigate('JobDetails', { data: item })}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={styles.title}>{item.jobTitle}</Text>
+        </View>
+
+        <Text style={[styles.salary, {}]}>{'Salary: ' + item.salary + ' L/year'}</Text>
+        <Text style={styles.salary}>{'Category: ' + item.category + ''}</Text>
+        <Text style={styles.salary}>{'Skills Requied: ' + item.skill}</Text>
+        <Text style={styles.salary}>{'Experience: ' + item.reqExperience + ' Year'}</Text>
+        <Text style={styles.salary}>{'Posted by: ' + item.posterName}</Text>
+      </TouchableOpacity>
+    )
+
+  }
   return (
-    <View>
-      <Text>Send</Text>
+    <View style={styles.container}>
+      {!isLogin ?
+        <NoLoginComponent
+          source={require('../../../img/searching.png')}
+          title='One place to track all your job application'
+          subTitle='Watch out and apply to jobs with high match scores and get real-time updates'
+        /> :
+        <FlatList
+          data={jobs}
+          keyExtractor={(item, index) => index}
+          renderItem={renderJobTitle}
+        />
+      }
+
+      {jobs.length <= 0 &&
+        <View style={styles.emptyView}>
+          <Text style={styles.noAppliedJobText}>No Applied Jobs </Text>
+        </View>
+      }
+
     </View>
   )
 }
 
 export default Send
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: BG_COLOR
+  },
+  searchjobText: {
+    fontSize: moderateScale(20),
+    fontWeight: '600',
+    color: 'black',
+
+  },
+  jobTitleBox: {
+    width: '90%',
+    backgroundColor: '#f2f2f2',
+    alignSelf: 'center',
+    marginTop: verticalScale(20),
+    borderRadius: verticalScale(10),
+    padding: moderateScale(10)
+  },
+  jobTitleText: {
+    fontSize: moderateScale(18),
+    fontWeight: '600',
+    color: 'black',
+  },
+  title: {
+    fontSize: moderateScale(20),
+    fontWeight: '600',
+    color: 'black'
+  },
+
+  salary: {
+    color: '#2e2e2e',
+    fontSize: moderateScale(15),
+    fontWeight: '600',
+    marginTop: moderateScale(10)
+  },
+  emptyView: {
+    flex: 1,
+    alignSelf:'center'
+
+  },
+  noAppliedJobText: {
+    color: 'black',
+    fontSize: moderateScale(22),
+    fontWeight: '600'
+  }
+})

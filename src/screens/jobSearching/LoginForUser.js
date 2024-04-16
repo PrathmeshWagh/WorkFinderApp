@@ -9,7 +9,7 @@ import firestore from '@react-native-firebase/firestore'
 import Loader from '../../component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const LoginForCompanyScreen = ({ navigation }) => {
+const LoginForUser = ({ navigation }) => {
   const [email, setemail] = useState('');
   const [badEmail, setBadEmail] = useState('');
 
@@ -44,7 +44,7 @@ const LoginForCompanyScreen = ({ navigation }) => {
 
   const loginUser = () => {
     setloading(true)
-    firestore().collection("job_posters").where('email', '==', email).get().then(data => {
+    firestore().collection("users").where('email', '==', email).get().then(data => {
       setloading(false)
       console.log('data', data.docs)
       if (data.docs.length > 0) {
@@ -70,8 +70,8 @@ const LoginForCompanyScreen = ({ navigation }) => {
     await AsyncStorage.setItem("EMAIL",email)
     await AsyncStorage.setItem("NAME",name)
     await AsyncStorage.setItem("USERID",id)
-    await AsyncStorage.setItem("USER_TYPE",'company')
-    navigation.navigate('DashBoardForComapny')
+    await AsyncStorage.setItem("USER_TYPE",'user')
+    navigation.navigate('Main')
   }
 
   return (
@@ -109,13 +109,13 @@ const LoginForCompanyScreen = ({ navigation }) => {
 
         }
       />
-      <CustomBorderButton title={'Create Account'} onPress={() => navigation.navigate('SignUpForCompanyScreen')} />
+      <CustomBorderButton title={'Create Account'} onPress={() => navigation.navigate('SignUpForUser')} />
       <Loader visible={loading} />
     </View>
   )
 }
 
-export default LoginForCompanyScreen
+export default LoginForUser
 
 const styles = StyleSheet.create({
   container: {

@@ -21,7 +21,6 @@ const Profile1 = ({ onJobPress }) => {
   const [showUploadButton, setShowUploadButton] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState(null);
 
-
   useEffect(() => {
     getData()
   }, [isFocused])
@@ -84,6 +83,21 @@ const Profile1 = ({ onJobPress }) => {
     setShowUploadButton(false);
   };
 
+  const logoutHandler = async () => {
+    try {
+      // Clear any user data stored locally (replace with your AsyncStorage keys)
+      await AsyncStorage.removeItem('USERID');
+      await AsyncStorage.removeItem('NAME');
+      await AsyncStorage.removeItem('JOBS');
+      await AsyncStorage.removeItem('PROFILE_IMG');
+
+      // Redirect the user to the login screen or any other desired screen
+      navigation.navigate('SelectUserScreen');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  }
+
 
   return (
     <View style={styles.container}>
@@ -103,7 +117,7 @@ const Profile1 = ({ onJobPress }) => {
 
       )}
 
-      <Loader visible={loading} /> 
+      <Loader visible={loading} />
 
 
       <Text style={styles.userNameText}>{name}</Text>
@@ -115,7 +129,7 @@ const Profile1 = ({ onJobPress }) => {
       <ProfileOptionItem icon={'briefcase-outline'} title={'My Jobs (' + jobs + ')'} onPress={() => onJobPress()} />
       <ProfileOptionItem icon={'handshake-outline'} title={'Contact Us'} />
       <ProfileOptionItem icon={'theme-light-dark'} title={'App Theme'} />
-      <ProfileOptionItem icon={'logout'} title={'Logout'} />
+      <ProfileOptionItem icon={'logout'} title={'Logout'} onPress={logoutHandler} />
     </View>
   )
 

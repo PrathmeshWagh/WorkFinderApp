@@ -13,10 +13,12 @@ const SplashScreen = ({ navigation }) => {
 
     const getData = async() =>{
         let type = await AsyncStorage.getItem("USER_TYPE")
-        console.log(type);
+        console.log('type',type);
         if (type!= null) {
             if (type == 'company') {
                 navigation.navigate('DashBoardForComapny')
+            }else{
+                navigation.navigate('JobSearchingNavigator')
             }
         }else{
             navigation.navigate('SelectUserScreen')
